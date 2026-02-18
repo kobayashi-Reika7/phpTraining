@@ -1,42 +1,328 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+/* =============================================
+   コンタクトフォーム スタイルシート
+   
+   既存 FuelPHP 版のシンプルなデザインを踏襲しつつ、
+   モダンな見た目に刷新する。
+   ============================================= */
+
+/* --- リセット・共通 --- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+    "Hiragino Sans", Meiryo, sans-serif;
+  background-color: #f0f2f5;
+  color: #1a1a2e;
+  line-height: 1.6;
+}
+
+/* --- レイアウト --- */
+.form-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
   text-align: center;
+  padding: 2rem 1rem;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.form-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.form-step-label {
+  font-size: 0.95rem;
+  opacity: 0.85;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.form-container {
+  flex: 1;
+  max-width: 640px;
+  width: 100%;
+  margin: 2rem auto;
+  padding: 0 1rem;
 }
 
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
+.form-footer {
+  text-align: center;
+  padding: 1.5rem 1rem;
   color: #888;
+  font-size: 0.8rem;
+}
+
+/* --- フォームフィールド --- */
+.form-field {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+  font-size: 0.95rem;
+}
+
+.required-badge {
+  display: inline-block;
+  background: #e74c3c;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 3px;
+  margin-left: 0.5rem;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+.form-input input[type="text"],
+.form-input input[type="email"],
+.form-input select,
+.form-input textarea {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #fff;
+}
+
+.form-input input:focus,
+.form-input select:focus,
+.form-input textarea:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+}
+
+.form-input .input-error {
+  border-color: #e74c3c;
+}
+
+.form-input .input-error:focus {
+  box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.15);
+}
+
+.form-input textarea {
+  resize: vertical;
+}
+
+.form-error {
+  color: #e74c3c;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+}
+
+.char-count {
+  color: #888;
+  font-size: 0.8rem;
+  text-align: right;
+  margin-top: 0.2rem;
+}
+
+/* --- ラジオ・チェックボックス --- */
+.radio-group,
+.checkbox-group {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.radio-label,
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.radio-label input,
+.checkbox-label input {
+  accent-color: #667eea;
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.clear-button {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.15rem 0.5rem;
+  font-size: 0.8rem;
+  color: #888;
+  cursor: pointer;
+}
+
+.clear-button:hover {
+  background: #f0f2f5;
+}
+
+/* --- ボタン --- */
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.1s, box-shadow 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: #1a1a2e;
+  border: 2px solid #d1d5db;
+}
+
+.btn-secondary:hover {
+  background: #f8f9fa;
+}
+
+/* --- 確認画面 --- */
+.confirm-message {
+  text-align: center;
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
+  color: #555;
+}
+
+.confirm-list {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+
+.confirm-item {
+  display: flex;
+  border-bottom: 1px solid #f0f2f5;
+  padding: 1rem 1.2rem;
+}
+
+.confirm-item:last-child {
+  border-bottom: none;
+}
+
+.confirm-item dt {
+  width: 180px;
+  flex-shrink: 0;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.9rem;
+}
+
+.confirm-item dd {
+  flex: 1;
+  word-break: break-word;
+}
+
+.confirm-comment {
+  white-space: pre-wrap;
+}
+
+/* --- 完了画面 --- */
+.complete-content,
+.error-content {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.complete-icon {
+  font-size: 4rem;
+  color: #27ae60;
+  margin-bottom: 1rem;
+}
+
+.complete-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.complete-content p {
+  color: #555;
+  margin-bottom: 0.3rem;
+}
+
+/* --- エラー画面 --- */
+.error-icon {
+  font-size: 4rem;
+  color: #e74c3c;
+  margin-bottom: 1rem;
+}
+
+.error-content h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #e74c3c;
+}
+
+.error-message {
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+/* --- レスポンシブ --- */
+@media (max-width: 600px) {
+  .form-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .confirm-item {
+    flex-direction: column;
+  }
+
+  .confirm-item dt {
+    width: auto;
+    margin-bottom: 0.2rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn {
+    width: 100%;
+  }
 }

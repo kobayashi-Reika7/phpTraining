@@ -1,35 +1,59 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useContactForm } from "./hooks/useContactForm";
+import { InputPage } from "./pages/InputPage";
+import { ConfirmPage } from "./pages/ConfirmPage";
+import { CompletePage } from "./pages/CompletePage";
+import { ErrorPage } from "./pages/ErrorPage";
+import "./App.css";
 
+/**
+ * アプリケーションのルートコンポーネント
+ *
+ * React Router を使わず、useState でステップ（step）を管理する SPA。
+ * コンタクトフォームは「入力→確認→完了」の一本道なので、
+ * URL を変えずに画面を切り替える方がシンプルで使いやすい。
+ *
+ * useContactForm フックが返すステップ値に応じて、表示するページを切り替える。
+ */
 function App() {
-  const [count, setCount] = useState(0)
+  const {
+    formData,
+    errors,
+    step,
+    serverError,
+    submitting,
+    updateField,
+    validateAndConfirm,
+    goBackToInput,
+    submit,
+    reset,
+  } = useContactForm();
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+  switch (step) {
+    case "input":
+      return (
+        <InputPage
+          formData={formData}
+          errors={errors}
+          updateField={updateField}
+          validateAndConfirm={validateAndConfirm}
+        />
+      );
+    case "confirm":
+      return (
+        <ConfirmPage
+          formData={formData}
+          goBackToInput={goBackToInput}
+          submit={submit}
+          submitting={submitting}
+        />
+      );
+    case "complete":
+      return <CompletePage reset={reset} />;
+    case "error":
+      return (
+        <ErrorPage serverError={serverError} goBackToInput={goBackToInput} />
+      );
+  }
 }
 
-export default App
+export default App;
