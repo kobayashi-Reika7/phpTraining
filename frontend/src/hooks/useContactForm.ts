@@ -65,15 +65,19 @@ export function useContactForm() {
     const validationErrors = validateContactForm(formData);
     setErrors(validationErrors);
 
-    // エラーが1つもなければ確認画面へ
     if (Object.keys(validationErrors).length === 0) {
       setStep("confirm");
+      window.scrollTo(0, 0);
+    } else {
+      // エラーがあればページ上部にスクロールして気づきやすくする
+      window.scrollTo(0, 0);
     }
   };
 
   /** 確認画面から入力画面に戻る */
   const goBackToInput = () => {
     setStep("input");
+    window.scrollTo(0, 0);
   };
 
   /**
@@ -100,6 +104,7 @@ export function useContactForm() {
 
       if (result.success) {
         setStep("complete");
+        window.scrollTo(0, 0);
       } else if (response.status === 422 && result.errors) {
         // サーバー側バリデーションエラー → 入力画面に戻す
         const serverErrors: ValidationErrors = {};
