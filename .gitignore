@@ -1,4 +1,6 @@
-# Backend (Laravel)
+# ==========================
+# sample/ (前回の練習成果)
+# ==========================
 sample/backend/vendor/
 sample/backend/node_modules/
 sample/backend/.env
@@ -8,14 +10,35 @@ sample/backend/storage/framework/sessions/*
 sample/backend/storage/framework/views/*
 sample/backend/storage/logs/*
 sample/backend/database/database.sqlite
-
-# Frontend (React + Vite)
 sample/frontend/node_modules/
 sample/frontend/dist/
 
-# OS
+# ==========================
+# backend/ (コンタクトフォーム Laravel)
+# ==========================
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/storage/*.key
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/database/database.sqlite
+
+# ==========================
+# frontend/ (コンタクトフォーム React)
+# ==========================
+frontend/node_modules/
+frontend/dist/
+
+# ==========================
+# contactform/ (既存 FuelPHP 参照用)
+# ==========================
+contactform/fuel/vendor/
+
+# ==========================
+# OS / IDE
+# ==========================
 Thumbs.db
 .DS_Store
-
-# Empty dir leftover (process lock)
-backend/
