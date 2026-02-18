@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { useApi } from "../hooks/useApi";
 import { CodeBlock } from "../components/CodeBlock";
@@ -18,6 +18,10 @@ export function DemoPage() {
   const { data: demo, loading, error } = useApi<DemoDetail>(
     `/api/demos/${decodedFilename}`
   );
+
+  useEffect(() => {
+    if (demo) document.title = `${demo.title} | PHP Omoshiroi Viewer`;
+  }, [demo]);
 
   const [runResult, setRunResult] = useState<DemoRunResult | null>(null);
   const [running, setRunning] = useState(false);
@@ -44,7 +48,7 @@ export function DemoPage() {
     }
   };
 
-  if (loading) return <div className="loading">読み込み中...</div>;
+  if (loading) return <div className="loading"><span className="spinner" />読み込み中...</div>;
   if (error) return <div className="error">エラー: {error}</div>;
   if (!demo) return <div className="error">デモが見つかりません</div>;
 
@@ -55,7 +59,10 @@ export function DemoPage() {
       </Link>
 
       <h1>{demo.title}</h1>
-      <code className="demo-filename">{demo.filename}</code>
+      <div className="demo-meta">
+        <code className="demo-filename">{demo.filename}</code>
+        <span className="demo-theme-badge">{demo.theme}</span>
+      </div>
       <p className="demo-description">{demo.description}</p>
 
       <CodeBlock code={demo.code} />

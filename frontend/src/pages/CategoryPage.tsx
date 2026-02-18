@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router";
 import { useApi } from "../hooks/useApi";
 import type { CategoryDemos } from "../types";
@@ -14,13 +15,19 @@ export function CategoryPage() {
     `/api/categories/${id}/demos`
   );
 
-  if (loading) return <div className="loading">読み込み中...</div>;
+  useEffect(() => {
+    if (data) document.title = `${data.category.name} | PHP Omoshiroi Viewer`;
+  }, [data]);
+
+  if (loading) return <div className="loading"><span className="spinner" />読み込み中...</div>;
   if (error) return <div className="error">エラー: {error}</div>;
   if (!data) return <div className="error">カテゴリが見つかりません</div>;
 
   return (
     <div className="category-page">
+      <Link to="/" className="breadcrumb">← トップに戻る</Link>
       <h1>{data.category.name}</h1>
+      <p className="demo-count-label">{data.demos.length} 件のデモ</p>
 
       <div className="demo-list">
         {data.demos.map((demo) => (

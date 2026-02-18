@@ -431,3 +431,73 @@ a {
   color: var(--text-secondary);
   font-size: 0.85rem;
 }
+
+/* --- 追加スタイル --- */
+.demo-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.demo-theme-badge {
+  font-size: 0.8rem;
+  background: rgba(88, 166, 255, 0.15);
+  color: var(--accent);
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.demo-count-label {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+/* --- ローディングスピナー --- */
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- レスポンシブ対応 --- */
+@media (max-width: 768px) {
+  .sidebar {
+    position: static;
+    width: 100%;
+    min-width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+    max-height: 200px;
+  }
+
+  .app-layout {
+    flex-direction: column;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding: 20px 16px;
+  }
+
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .demo-list {
+    grid-template-columns: 1fr;
+  }
+}

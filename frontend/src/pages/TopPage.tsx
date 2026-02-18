@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Link } from "react-router";
 import { useApi } from "../hooks/useApi";
 import type { Category } from "../types";
@@ -11,7 +12,11 @@ import type { Category } from "../types";
 export function TopPage() {
   const { data: categories, loading, error } = useApi<Category[]>("/api/categories");
 
-  if (loading) return <div className="loading">読み込み中...</div>;
+  useEffect(() => {
+    document.title = "PHP Omoshiroi Viewer";
+  }, []);
+
+  if (loading) return <div className="loading"><span className="spinner" />読み込み中...</div>;
   if (error) return <div className="error">エラー: {error}</div>;
 
   return (
