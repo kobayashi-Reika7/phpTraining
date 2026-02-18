@@ -29,7 +29,7 @@ class PhpErrorException extends \ErrorException
 			if (\Fuel::$env != \Fuel::PRODUCTION and ($this->code & error_reporting()) == $this->code)
 			{
 				static::$count++;
-				\Error::show_php_error(new \ErrorException($this->message, $this->code, 0, $this->file, $this->line));
+				Error::show_php_error(new \ErrorException($this->message, $this->code, 0, $this->file, $this->line));
 			}
 		}
 		elseif (\Fuel::$env != \Fuel::PRODUCTION
@@ -37,7 +37,7 @@ class PhpErrorException extends \ErrorException
 				and ($this->severity & error_reporting()) == $this->severity)
 		{
 			static::$count++;
-			\Error::notice('Error throttling threshold was reached, no more full error reports are shown.', true);
+			Error::notice('Error throttling threshold was reached, no more full error reports are shown.', true);
 		}
 	}
 }
@@ -103,7 +103,7 @@ class Error
 	 * @param   Exception  $e  the exception
 	 * @return  bool
 	 */
-	public static function exception_handler(\Exception $e)
+	public static function exception_handler(\Throwable $e)
 	{
 		if (method_exists($e, 'handle'))
 		{
@@ -160,7 +160,7 @@ class Error
 	 * @param   Exception  $e  the exception to show
 	 * @return  void
 	 */
-	public static function show_php_error(\Exception $e)
+	public static function show_php_error(\Throwable $e)
 	{
 		$fatal = (bool)( ! in_array($e->getCode(), \Config::get('errors.continue_on', array())));
 		$data = static::prepare_exception($e, $fatal);
@@ -248,7 +248,7 @@ class Error
 	 *
 	 * @return  void
 	 */
-	public static function show_production_error(\Exception $e)
+	public static function show_production_error(\Throwable $e)
 	{
 		// when we're on CLI, always show the php error
 		if (\Fuel::$is_cli)
@@ -264,7 +264,7 @@ class Error
 		exit(\View::forge('errors'.DS.'production'));
 	}
 
-	protected static function prepare_exception(\Exception $e, $fatal = true)
+	protected static function prepare_exception(\Throwable $e, $fatal = true)
 	{
 		$data = array();
 		$data['type']		= get_class($e);

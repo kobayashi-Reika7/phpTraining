@@ -47,7 +47,7 @@ class Fieldset
 	{
 		if ($exists = static::instance($name))
 		{
-			\Error::notice('Fieldset with this name exists already, cannot be overwritten.');
+			\Fuel\Core\Error::notice('Fieldset with this name exists already, cannot be overwritten.');
 			return $exists;
 		}
 
@@ -305,7 +305,7 @@ class Fieldset
 		// Check if it exists already, if so: return and give notice
 		if ($field = $this->field($name))
 		{
-			\Error::notice('Field with this name exists already in this fieldset: "'.$name.'".');
+			\Fuel\Core\Error::notice('Field with this name exists already in this fieldset: "'.$name.'".');
 			return $field;
 		}
 

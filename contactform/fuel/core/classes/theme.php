@@ -161,7 +161,7 @@ class Theme
 		}
 		catch (\Exception $e)
 		{
-			\Error::exception_handler($e);
+			\Fuel\Core\Error::exception_handler($e);
 
 			return '';
 		}

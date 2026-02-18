@@ -450,7 +450,7 @@ class Validation
 					: (is_object(@$callback[0])
 						? get_class(@$callback[0]).'->'.@$callback[1]
 						: @$callback[0].'::'.@$callback[1]);
-			\Error::notice('Invalid rule "'.$string.'" passed to Validation, not used.');
+			\Fuel\Core\Error::notice('Invalid rule "'.$string.'" passed to Validation, not used.');
 			return false;
 		}
 	}

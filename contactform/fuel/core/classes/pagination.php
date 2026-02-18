@@ -75,7 +75,7 @@ class Pagination
 	{
 		if ($exists = static::instance($name))
 		{
-			\Error::notice('Pagination with this name exists already, cannot be overwritten.');
+			\Fuel\Core\Error::notice('Pagination with this name exists already, cannot be overwritten.');
 			return $exists;
 		}
 

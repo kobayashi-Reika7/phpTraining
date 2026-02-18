@@ -33,19 +33,19 @@ register_shutdown_function(function ()
 	Event::shutdown();
 
 	load_error_classes();
-	return \Error::shutdown_handler();
+	return \Fuel\Core\Error::shutdown_handler();
 });
 
-set_exception_handler(function (\Exception $e)
+set_exception_handler(function (\Throwable $e)
 {
 	load_error_classes();
-	return \Error::exception_handler($e);
+	return \Fuel\Core\Error::exception_handler($e);
 });
 
 set_error_handler(function ($severity, $message, $filepath, $line)
 {
 	load_error_classes();
-	return \Error::error_handler($severity, $message, $filepath, $line);
+	return \Fuel\Core\Error::error_handler($severity, $message, $filepath, $line);
 });
 
 function setup_autoloader()
