@@ -1,35 +1,28 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route } from "react-router";
+import { Layout } from "./components/Layout";
+import { TopPage } from "./pages/TopPage";
+import { CategoryPage } from "./pages/CategoryPage";
+import { DemoPage } from "./pages/DemoPage";
+import "./App.css";
 
+/**
+ * アプリケーションのルートコンポーネント
+ *
+ * BrowserRouter で SPA のルーティングを管理する。
+ * Layout の中に Outlet があり、URLに応じて TopPage / CategoryPage / DemoPage が表示される。
+ */
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route path="/" element={<TopPage />} />
+          <Route path="/category/:id" element={<CategoryPage />} />
+          <Route path="/demo/:filename" element={<DemoPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;
