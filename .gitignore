@@ -1,18 +1,21 @@
 # Backend (Laravel)
-backend/vendor/
-backend/node_modules/
-backend/.env
-backend/storage/*.key
-backend/storage/framework/cache/data/*
-backend/storage/framework/sessions/*
-backend/storage/framework/views/*
-backend/storage/logs/*
-backend/database/database.sqlite
+sample/backend/vendor/
+sample/backend/node_modules/
+sample/backend/.env
+sample/backend/storage/*.key
+sample/backend/storage/framework/cache/data/*
+sample/backend/storage/framework/sessions/*
+sample/backend/storage/framework/views/*
+sample/backend/storage/logs/*
+sample/backend/database/database.sqlite
 
 # Frontend (React + Vite)
-frontend/node_modules/
-frontend/dist/
+sample/frontend/node_modules/
+sample/frontend/dist/
 
 # OS
 Thumbs.db
 .DS_Store
+
+# Empty dir leftover (process lock)
+backend/

@@ -1,0 +1,382 @@
+{
+  "categories": [
+    {
+      "id": "array",
+      "name": "配列（Array）",
+      "description": "PHPの配列はArrayとHashの両方を兼ねており、独特な挙動がある",
+      "demos": [
+        {
+          "filename": "array_at.php",
+          "title": "存在しないキーへのアクセス",
+          "theme": "Warning + null 返却",
+          "description": "空の配列に存在しないキー 'not' でアクセスすると、Warningが出るが処理は止まらず、nullが返る。そのため !== null の判定は false となり、else 側が実行される。",
+          "runnable": true
+        },
+        {
+          "filename": "array_false.php",
+          "title": "array_unique と false 値",
+          "theme": "false 値の重複排除",
+          "description": "array_unique は値の比較に文字列変換を使うため、false 値が複数あっても1つにまとまる。結果の配列のキーは元の配列のキーが保持される。",
+          "runnable": true
+        },
+        {
+          "filename": "array_in_array.php",
+          "title": "in_array の型変換",
+          "theme": "strict モードの違い",
+          "description": "in_array は第3引数を true にしないと緩い比較（==）を行う。文字列 '0' と整数 0 は == では true だが、=== では false になる。",
+          "runnable": true
+        },
+        {
+          "filename": "array_slice_hanuke.php",
+          "title": "数値キーの歯抜けと slice",
+          "theme": "キーと順序の関係",
+          "description": "PHPの配列は数値キーが歯抜けでも内部的に順序を持つ。array_slice は順序ベースで切り出し、キーは 0 から振り直される。",
+          "runnable": true
+        },
+        {
+          "filename": "array_undefined_offset.php",
+          "title": "未定義オフセットのアクセス",
+          "theme": "Warning + null",
+          "description": "空の配列にインデックス 0 でアクセスすると、Warning を出力した上で null が返る。PHP 8 では Undefined array key の Warning になる。",
+          "runnable": true
+        },
+        {
+          "filename": "arraynull.php",
+          "title": "未定義キーの参照パターン",
+          "theme": "isset / ?? / 直接参照の違い",
+          "description": "配列の未定義キーへのアクセス方法で挙動が異なる。isset() や ?? は Warning を出さないが、直接参照や === null 比較は Warning を出す。",
+          "runnable": true
+        },
+        {
+          "filename": "arraynullcomplex.php",
+          "title": "未定義キー参照の実用例",
+          "theme": "Warning の発生条件",
+          "description": "実際のコードで未定義キーに直接アクセスすると Warning が発生する。?? 演算子を使えば安全にデフォルト値を取得できる。",
+          "runnable": true
+        },
+        {
+          "filename": "arrayunique.php",
+          "title": "多次元配列の unique",
+          "theme": "array_unique の挙動",
+          "description": "array_unique は多次元配列にも使えるが、内部で文字列変換されるため Warning が出る。結果としては重複が排除される。",
+          "runnable": true
+        },
+        {
+          "filename": "empty_json.php",
+          "title": "空配列の JSON 化",
+          "theme": "[] vs {} の違い",
+          "description": "PHPの空配列を json_encode すると [] になる。空のオブジェクト {} を出力したい場合は new stdClass() を使う必要がある。",
+          "runnable": true
+        },
+        {
+          "filename": "string_array_access.php",
+          "title": "文字列への配列アクセス",
+          "theme": "string[0] の挙動",
+          "description": "PHPでは文字列にも配列のようにインデックスでアクセスできる。空文字列に代入すると先頭1バイトだけが入る。整数値に配列アクセスするとエラーになる。",
+          "runnable": true
+        },
+        {
+          "filename": "to_array.php",
+          "title": "(array) キャストと型ヒント",
+          "theme": "キャストは通るが型ヒントは通らない",
+          "description": "(array) キャストは文字列を配列に変換できるが、関数の array 型ヒントに文字列を渡すと TypeError になる。型ヒントの方が厳密。",
+          "runnable": true
+        },
+        {
+          "filename": "uniqud.php",
+          "title": "uniqid の一意性",
+          "theme": "more_entropy オプション",
+          "description": "uniqid() はマイクロ秒ベースのIDを生成するが、高速ループでは重複する可能性がある。more_entropy=true で精度が上がる。",
+          "runnable": true
+        },
+        {
+          "filename": "function_parameters_arra_is_pointer_or_not.php",
+          "title": "配列の値渡し",
+          "theme": "関数引数での配列コピー",
+          "description": "PHPの関数引数は値渡しがデフォルト。配列を関数に渡して変更しても、元の配列は変わらない。参照渡しにするには & を付ける。",
+          "runnable": true
+        }
+      ]
+    },
+    {
+      "id": "type-comparison",
+      "name": "型比較・型変換",
+      "description": "PHPの緩い型比較（==）や暗黙の型変換による予想外の挙動",
+      "demos": [
+        {
+          "filename": "double_equal.php",
+          "title": "== の推移律が成り立たない",
+          "theme": "\"true\"==0, 0==\"0\", \"true\"!=\"0\"",
+          "description": "PHPの == 演算子は推移律が成り立たない。'true'==0 は true、0=='0' は true だが、'true'=='0' は false。型の自動変換が原因。",
+          "runnable": true
+        },
+        {
+          "filename": "false_null.php",
+          "title": "empty と is_null の違い",
+          "theme": "empty(false)→true, is_null(false)→false",
+          "description": "empty() は false, 0, '', null, [] などを全て true と判定する。is_null() は null のみ。判定したい内容に合わせて使い分ける。",
+          "runnable": true
+        },
+        {
+          "filename": "null_cast.php",
+          "title": "未定義変数の参照",
+          "theme": "Warning + NULL",
+          "description": "未定義の変数を参照すると Warning が出て null が返る。PHP 8 では Undefined variable の Warning。",
+          "runnable": true
+        },
+        {
+          "filename": "null_sprintf.php",
+          "title": "sprintf に null を渡す",
+          "theme": "空文字として扱われる",
+          "description": "sprintf の %s に null を渡すと空文字として扱われる。PHP 8.1 以降では Deprecated の Warning が出る場合がある。",
+          "runnable": true
+        },
+        {
+          "filename": "empty_emptyarray.php",
+          "title": "空配列は empty か",
+          "theme": "empty([]) → true",
+          "description": "空の配列は empty() で true を返す。配列が空かどうかの判定に empty() が使えるが、0 や '' も true になるため注意。",
+          "runnable": true
+        },
+        {
+          "filename": "empty_string_is_null.php",
+          "title": "空文字は null か",
+          "theme": "is_null(\"\") → false",
+          "description": "空文字 '' は null ではない。is_null('') は false を返す。空文字と null は別物として扱う必要がある。",
+          "runnable": true
+        },
+        {
+          "filename": "isnumeric.php",
+          "title": "is_numeric vs is_float",
+          "theme": "文字列 \"0.234\" の判定差",
+          "description": "is_numeric は文字列 '0.234' を true と判定するが、is_float は型をチェックするため false。数値判定と型判定は異なる。",
+          "runnable": true
+        },
+        {
+          "filename": "sizeofnull.php",
+          "title": "sizeof(null)",
+          "theme": "PHP 8 で TypeError",
+          "description": "sizeof は count のエイリアス。PHP 8 では null を渡すと TypeError が発生する。PHP 7 では Warning のみだった。",
+          "runnable": true
+        },
+        {
+          "filename": "count_not_coutable.php",
+          "title": "count(\"string\")",
+          "theme": "PHP 7+ で Warning / PHP 8 で TypeError",
+          "description": "count() に配列や Countable でない値を渡すと、PHP 7 では Warning + 1 を返すが、PHP 8 では TypeError になる。",
+          "runnable": true
+        }
+      ]
+    },
+    {
+      "id": "function",
+      "name": "関数",
+      "description": "関数の引数、戻り値、スコープに関する挙動",
+      "demos": [
+        {
+          "filename": "fewMethodParameters.php",
+          "title": "引数の過不足",
+          "theme": "多い→OK、少ない→Fatal",
+          "description": "PHPでは定義より多い引数は無視されるが、少ないと ArgumentCountError になる。PHP 7 以前は引数が多いと Warning だった。",
+          "runnable": true
+        },
+        {
+          "filename": "php_returnvalue_void.php",
+          "title": "void 関数の return",
+          "theme": "return null は NG",
+          "description": "void 型の関数では return; は OK だが、return null; は Fatal Error。void は「何も返さない」という意味で、null すら返せない。",
+          "runnable": true
+        },
+        {
+          "filename": "return_null_and_typehint.php",
+          "title": "void 型ヒントと null",
+          "theme": "return null; → Fatal",
+          "description": "void 型ヒントの関数で return null; を書くと Fatal Error。php_returnvalue_void.php と同じテーマの別パターン。",
+          "runnable": true
+        },
+        {
+          "filename": "no_global_in_function.php",
+          "title": "関数内のスコープ",
+          "theme": "require 先の変数が見える",
+          "description": "関数内で require_once したファイルの変数は、その関数のスコープで参照可能。グローバルスコープとは分離されている。",
+          "runnable": true
+        },
+        {
+          "filename": "named_arguments.php",
+          "title": "readonly プロパティ",
+          "theme": "PHP 8.1 コンストラクタプロモーション",
+          "description": "PHP 8.1 の readonly プロパティとコンストラクタプロモーションにより、クラス定義が簡潔になる。一度セットすると変更不可。",
+          "runnable": true
+        }
+      ]
+    },
+    {
+      "id": "class-object",
+      "name": "クラス・オブジェクト",
+      "description": "継承、マジックメソッド、プロパティに関する挙動",
+      "demos": [
+        {
+          "filename": "extends.php",
+          "title": "メソッドシグネチャの互換性",
+          "theme": "デフォルト引数の差で Fatal",
+          "description": "子クラスでオーバーライドする際、親のデフォルト引数を削除するとシグネチャ互換性エラー。LSP（リスコフの置換原則）に関連。",
+          "runnable": true
+        },
+        {
+          "filename": "construct_extend.php",
+          "title": "コンストラクタの継承と名前空間",
+          "theme": "親子の __construct",
+          "description": "名前空間を使った親子クラスのコンストラクタ。子クラスのコンストラクタが private だと外部からインスタンス化できない。",
+          "runnable": true
+        },
+        {
+          "filename": "callable_class_property.php",
+          "title": "Callable プロパティ vs メソッド",
+          "theme": "$this->func() と ($this->func)() の違い",
+          "description": "$this->func() はメソッド呼び出し、($this->func)() はプロパティに格納されたクロージャの呼び出し。同名でも呼び方で挙動が変わる。",
+          "runnable": true
+        },
+        {
+          "filename": "magic_method_call_with_no_args.php",
+          "title": "__call マジックメソッド",
+          "theme": "引数なし呼び出しの挙動",
+          "description": "存在しないメソッドを呼ぶと __call が発動する。引数なしで呼んでも $args は空配列として渡される。",
+          "runnable": true
+        },
+        {
+          "filename": "fatalexception.php",
+          "title": "require の Fatal Error",
+          "theme": "存在しないファイルの require",
+          "description": "require_once で存在しないファイルを読み込むと Fatal Error。include_once なら Warning で済む。",
+          "runnable": true
+        }
+      ]
+    },
+    {
+      "id": "datetime",
+      "name": "日時（DateTime）",
+      "description": "PHPの日時処理における落とし穴",
+      "demos": [
+        {
+          "filename": "datetime_t.php",
+          "title": "月の日数とうるう年",
+          "theme": "format('t') の正確性",
+          "description": "DateTime::format('t') はその月の日数を返す。うるう年判定も正確で、100年ルール・400年ルールにも対応している。",
+          "runnable": true
+        },
+        {
+          "filename": "datetime_create_from_format.php",
+          "title": "createFromFormat の罠",
+          "theme": "Y-m のみ指定時の挙動",
+          "description": "DateTime::createFromFormat で年月だけ指定すると、日は現在日が使われる。2月30日などが発生し、意図しない結果になる。",
+          "runnable": false
+        }
+      ]
+    },
+    {
+      "id": "string-regex",
+      "name": "文字列・正規表現",
+      "description": "文字列操作と正規表現の注意点",
+      "demos": [
+        {
+          "filename": "strpos.php",
+          "title": "strpos の戻り値の罠",
+          "theme": "0 と false の比較",
+          "description": "strpos は見つからないと false を返す。位置 0 で見つかった場合、>= 0 だと false も true と判定されてしまう。=== を使うべき。",
+          "runnable": true
+        },
+        {
+          "filename": "regex.php",
+          "title": "preg_match でのURL検証",
+          "theme": "正規表現パターン",
+          "description": "preg_match で特定ドメインのURLをマッチングする例。https? でプロトコルを、ドットのエスケープに注意が必要。",
+          "runnable": true
+        },
+        {
+          "filename": "preg_backslash.php",
+          "title": "str_replace とバックスラッシュ",
+          "theme": "エスケープの挙動",
+          "description": "str_replace でバックスラッシュ付きの文字列を置換する際、PHPの文字列リテラルとしてのエスケープに注意が必要。",
+          "runnable": true
+        },
+        {
+          "filename": "htmlentities.php",
+          "title": "HTML エンティティ変換",
+          "theme": "<, & の変換",
+          "description": "htmlentities は HTML特殊文字をエンティティに変換する。XSS対策の基本。< は &lt; に、& は &amp; になる。",
+          "runnable": true
+        },
+        {
+          "filename": "http_build_query.php",
+          "title": "クエリ文字列の生成",
+          "theme": "配列→URLクエリ",
+          "description": "http_build_query は連想配列を URL クエリ文字列に変換する。['a'=>1, 'b'=>2] が 'a=1&b=2' になる。",
+          "runnable": true
+        },
+        {
+          "filename": "decodeit.php",
+          "title": "base64 のエンコード/デコード",
+          "theme": "false/null の扱い",
+          "description": "base64_decode に false や null を渡すと空文字が返る。不正な base64 文字列もエラーにならずに何かしら返す。",
+          "runnable": true
+        },
+        {
+          "filename": "dainyu.php",
+          "title": "=== 厳密比較と代入",
+          "theme": "代入式の戻り値",
+          "description": "=== で厳密比較した結果を変数に代入できる。$is = $a === 'bbb' のように書ける。",
+          "runnable": true
+        }
+      ]
+    },
+    {
+      "id": "other",
+      "name": "その他",
+      "description": "定数スコープ、exec、シンボリックリンクなど",
+      "demos": [
+        {
+          "filename": "define_scope.php",
+          "title": "define の関数スコープ",
+          "theme": "関数内 define は呼ぶまで未定義",
+          "description": "define() を関数内に書くと、その関数が呼ばれるまで定数は定義されない。呼ぶ前に参照すると Undefined constant エラーになる。",
+          "runnable": true
+        },
+        {
+          "filename": "exec.php",
+          "title": "exec の戻り値",
+          "theme": "外部コマンドの終了コード",
+          "description": "exec() は外部コマンドを実行し、第3引数に終了コードが入る。存在しないコマンドでもエラーにならず、終了コードで判定する。",
+          "runnable": true
+        },
+        {
+          "filename": "pdo_last_insert_id.php",
+          "title": "PDO（未完成ファイル）",
+          "theme": "構文エラー",
+          "description": "このファイルは途中で終わっており構文エラーになる。実行不可。",
+          "runnable": false
+        },
+        {
+          "filename": "sym/new/index.php",
+          "title": "require パス（構文エラー）",
+          "theme": "セミコロン位置のミス",
+          "description": "require_once のパス文字列の終わりにセミコロンが入っており構文エラー。よくあるタイポの例。",
+          "runnable": false
+        },
+        {
+          "filename": "sym/new/hoge.php",
+          "title": "シンボリックリンク検証",
+          "theme": "正常出力",
+          "description": "シンボリックリンクの検証用ファイル。'new' と出力するだけのシンプルなスクリプト。",
+          "runnable": true
+        },
+        {
+          "filename": "no_global_in_function_required.php",
+          "title": "require される側のファイル",
+          "theme": "変数定義のみ",
+          "description": "no_global_in_function.php から require されるファイル。単体では変数を定義するだけで出力はない。",
+          "runnable": false
+        }
+      ]
+    }
+  ]
+}
