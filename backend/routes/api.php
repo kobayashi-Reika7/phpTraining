@@ -7,9 +7,7 @@
  * 例: Route::post('/contact', ...) → POST /api/contact
  */
 
+use App\Http\Controllers\Api\ContactController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/contact', function () {
-    // Phase 2 で ContactController に置き換え
-    return response()->json(['status' => 'ok', 'message' => 'API is ready']);
-});
+Route::post('/contact', [ContactController::class, 'store']);
