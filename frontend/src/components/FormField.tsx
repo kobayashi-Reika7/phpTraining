@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { ReactNode } from "react";
 
 /**
@@ -20,7 +21,7 @@ interface FormFieldProps {
   children: ReactNode;
 }
 
-export function FormField({ label, required, error, children }: FormFieldProps) {
+export const FormField = memo(function FormField({ label, required, error, children }: FormFieldProps) {
   return (
     <div className="form-field">
       <label className="form-label">
@@ -31,4 +32,4 @@ export function FormField({ label, required, error, children }: FormFieldProps) 
       {error && <p className="form-error">{error}</p>}
     </div>
   );
-}
+});

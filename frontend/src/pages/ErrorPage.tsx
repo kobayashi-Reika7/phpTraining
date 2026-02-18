@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FormLayout } from "../components/FormLayout";
 
 /**
@@ -11,7 +12,7 @@ interface ErrorPageProps {
   goBackToInput: () => void;
 }
 
-export function ErrorPage({ serverError, goBackToInput }: ErrorPageProps) {
+export const ErrorPage = memo(function ErrorPage({ serverError, goBackToInput }: ErrorPageProps) {
   return (
     <FormLayout title="エラー">
       <div className="error-content">
@@ -30,4 +31,4 @@ export function ErrorPage({ serverError, goBackToInput }: ErrorPageProps) {
       </div>
     </FormLayout>
   );
-}
+});

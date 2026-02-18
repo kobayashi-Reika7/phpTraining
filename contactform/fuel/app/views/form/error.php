@@ -1,10 +1,11 @@
-<?php 
+<?php
 /**
- * Sample Contact Form
+ * エラー画面ビュー
  *
- * @author     Kenji Suzuki https://github.com/kenjis
- * @copyright  2011 Kenji Suzuki
- * @license    MIT License http://www.opensource.org/licenses/mit-license.php
+ * メール送信に失敗した際に表示される。
  */
 ?>
-<p>Error</p>
+<h2>送信エラー</h2>
+<p>申し訳ございません。メールの送信に失敗しました。</p>
+<p>しばらく経ってからもう一度お試しください。</p>
+<p><?php echo Html::anchor('form/', 'フォームに戻る'); ?></p>

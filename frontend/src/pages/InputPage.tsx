@@ -1,3 +1,4 @@
+import { memo, useCallback } from "react";
 import { FormField } from "../components/FormField";
 import { FormLayout } from "../components/FormLayout";
 import type { ContactFormData, ValidationErrors } from "../types";
@@ -17,7 +18,7 @@ interface InputPageProps {
   validateAndConfirm: () => void;
 }
 
-export function InputPage({
+export const InputPage = memo(function InputPage({
   formData,
   errors,
   updateField,
@@ -27,21 +28,27 @@ export function InputPage({
    * チェックボックス（lang）のトグル処理
    * 選択済みなら外す、未選択なら追加する
    */
-  const toggleLang = (value: string) => {
-    const next = formData.lang.includes(value)
-      ? formData.lang.filter((l) => l !== value)
-      : [...formData.lang, value];
-    updateField({ lang: next });
-  };
+  const toggleLang = useCallback(
+    (value: string) => {
+      const next = formData.lang.includes(value)
+        ? formData.lang.filter((l) => l !== value)
+        : [...formData.lang, value];
+      updateField({ lang: next });
+    },
+    [formData.lang, updateField]
+  );
 
   /**
    * フォーム送信時（Enter キーやボタンクリック）の処理
    * ページ遷移（リロード）を防ぎ、バリデーション→確認画面を実行
    */
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    validateAndConfirm();
-  };
+  const handleSubmit = useCallback(
+    (e: React.FormEvent) => {
+      e.preventDefault();
+      validateAndConfirm();
+    },
+    [validateAndConfirm]
+  );
 
   return (
     <FormLayout title="入力">
@@ -148,4 +155,4 @@ export function InputPage({
       </form>
     </FormLayout>
   );
-}
+});

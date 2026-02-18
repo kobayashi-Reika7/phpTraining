@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FormLayout } from "../components/FormLayout";
 import type { ContactFormData } from "../types";
 
@@ -14,7 +15,7 @@ interface ConfirmPageProps {
   submitting: boolean;
 }
 
-export function ConfirmPage({
+export const ConfirmPage = memo(function ConfirmPage({
   formData,
   goBackToInput,
   submit,
@@ -71,4 +72,4 @@ export function ConfirmPage({
       </div>
     </FormLayout>
   );
-}
+});

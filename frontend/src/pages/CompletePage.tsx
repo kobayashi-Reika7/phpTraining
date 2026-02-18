@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FormLayout } from "../components/FormLayout";
 
 /**
@@ -10,7 +11,7 @@ interface CompletePageProps {
   reset: () => void;
 }
 
-export function CompletePage({ reset }: CompletePageProps) {
+export const CompletePage = memo(function CompletePage({ reset }: CompletePageProps) {
   return (
     <FormLayout title="完了">
       <div className="complete-content">
@@ -26,4 +27,4 @@ export function CompletePage({ reset }: CompletePageProps) {
       </div>
     </FormLayout>
   );
-}
+});

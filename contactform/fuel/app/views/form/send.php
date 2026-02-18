@@ -1,10 +1,11 @@
-<?php 
+<?php
 /**
- * Sample Contact Form
+ * 送信完了画面ビュー
  *
- * @author     Kenji Suzuki https://github.com/kenjis
- * @copyright  2011 Kenji Suzuki
- * @license    MIT License http://www.opensource.org/licenses/mit-license.php
+ * メール送信が成功した後に表示される。
  */
 ?>
-<p>Send</p>
+<h2>送信完了</h2>
+<p>お問い合わせありがとうございます。</p>
+<p>確認メールをお送りしましたので、ご確認ください。</p>
+<p><?php echo Html::anchor('form/', 'フォームに戻る'); ?></p>

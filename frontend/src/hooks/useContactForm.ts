@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import type {
   ContactFormData,
   ValidationErrors,
@@ -6,6 +6,7 @@ import type {
   ApiResponse,
 } from "../types";
 import { validateContactForm } from "../utils/validation";
+import { scrollToTop } from "../utils/scroll";
 
 /**
  * コンタクトフォームのカスタムフック
@@ -14,12 +15,9 @@ import { validateContactForm } from "../utils/validation";
  * 各ページコンポーネントはこのフックの返り値だけを使えばよく、
  * ロジックがコンポーネントに散在しない。
  *
- * カスタムフックとは：
- * React の useState/useEffect 等を組み合わせた再利用可能なロジックの塊。
- * 関数名が "use" で始まるのが慣例。
+ * useCallback でハンドラをメモ化し、子コンポーネントの不要な再レンダリングを防ぐ。
  */
 
-/** フォームの初期値 */
 const initialFormData: ContactFormData = {
   name: "",
   email: "",
@@ -38,57 +36,50 @@ export function useContactForm() {
 
   /**
    * フィールド値を更新する
-   *
-   * name, email 等の単一値フィールド用。
-   * Partial<ContactFormData> を受け取り、該当フィールドだけ上書きする。
+   * 入力中はそのフィールドのエラーをクリアして入力しやすくする。
    */
-  const updateField = (field: Partial<ContactFormData>) => {
-    setFormData((prev) => ({ ...prev, ...field }));
-    // 入力中はそのフィールドのエラーをクリア（入力しやすくなる）
-    const fieldName = Object.keys(field)[0] as keyof ContactFormData;
-    if (errors[fieldName]) {
-      setErrors((prev) => {
-        const next = { ...prev };
-        delete next[fieldName];
-        return next;
-      });
-    }
-  };
+  const updateField = useCallback(
+    (field: Partial<ContactFormData>) => {
+      setFormData((prev) => ({ ...prev, ...field }));
+      const fieldName = Object.keys(field)[0] as keyof ContactFormData;
+      if (errors[fieldName]) {
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next[fieldName];
+          return next;
+        });
+      }
+    },
+    [errors]
+  );
 
   /**
    * バリデーション実行 → 確認画面へ遷移
-   *
-   * フロント側でバリデーションを行い、
-   * エラーがなければ確認画面（confirm）に進む。
    */
-  const validateAndConfirm = () => {
+  const validateAndConfirm = useCallback(() => {
     const validationErrors = validateContactForm(formData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length === 0) {
       setStep("confirm");
-      window.scrollTo(0, 0);
-    } else {
-      // エラーがあればページ上部にスクロールして気づきやすくする
-      window.scrollTo(0, 0);
     }
-  };
+    scrollToTop();
+  }, [formData]);
 
   /** 確認画面から入力画面に戻る */
-  const goBackToInput = () => {
+  const goBackToInput = useCallback(() => {
     setStep("input");
-    window.scrollTo(0, 0);
-  };
+    scrollToTop();
+  }, []);
 
   /**
    * API にフォームデータを送信する
    *
-   * fetch() で POST リクエストを送り、レスポンスに応じてステップを切り替える。
    * - 成功 → complete（完了画面）
    * - 422 → input に戻してサーバー側エラーを表示
    * - その他 → error（エラー画面）
    */
-  const submit = async () => {
+  const submit = useCallback(async () => {
     setSubmitting(true);
     try {
       const response = await fetch("/api/contact", {
@@ -104,34 +95,39 @@ export function useContactForm() {
 
       if (result.success) {
         setStep("complete");
-        window.scrollTo(0, 0);
+        scrollToTop();
       } else if (response.status === 422 && result.errors) {
-        // サーバー側バリデーションエラー → 入力画面に戻す
         const serverErrors: ValidationErrors = {};
         for (const [key, messages] of Object.entries(result.errors)) {
           serverErrors[key as keyof ContactFormData] = messages[0];
         }
         setErrors(serverErrors);
         setStep("input");
+        scrollToTop();
       } else {
         setServerError(result.message);
         setStep("error");
+        scrollToTop();
       }
     } catch {
-      setServerError("通信エラーが発生しました。しばらく経ってからお試しください。");
+      setServerError(
+        "通信エラーが発生しました。しばらく経ってからお試しください。"
+      );
       setStep("error");
+      scrollToTop();
     } finally {
       setSubmitting(false);
     }
-  };
+  }, [formData]);
 
   /** フォームを初期状態にリセットして最初に戻る */
-  const reset = () => {
+  const reset = useCallback(() => {
     setFormData(initialFormData);
     setErrors({});
     setServerError("");
     setStep("input");
-  };
+    scrollToTop();
+  }, []);
 
   return {
     formData,

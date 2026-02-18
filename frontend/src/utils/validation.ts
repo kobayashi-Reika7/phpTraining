@@ -11,6 +11,15 @@ import { GENDER_OPTIONS, KIND_OPTIONS, LANG_OPTIONS } from "../types";
  *
  * ※セキュリティ上の最終防衛はバックエンド側のバリデーション
  */
+
+/**
+ * 許可値リストに含まれるかチェックするヘルパー
+ * 型アサーションを一箇所にまとめることで安全性と可読性を向上
+ */
+function isAllowedValue(value: string, options: readonly string[]): boolean {
+  return options.includes(value);
+}
+
 export function validateContactForm(
   data: ContactFormData
 ): ValidationErrors {
@@ -40,23 +49,18 @@ export function validateContactForm(
   }
 
   // gender: 値があれば許可値チェック
-  if (data.gender && !(GENDER_OPTIONS as readonly string[]).includes(data.gender)) {
+  if (data.gender && !isAllowedValue(data.gender, GENDER_OPTIONS)) {
     errors.gender = "無効な選択肢です";
   }
 
   // kind: 値があれば許可値チェック
-  if (data.kind && !(KIND_OPTIONS as readonly string[]).includes(data.kind)) {
+  if (data.kind && !isAllowedValue(data.kind, KIND_OPTIONS)) {
     errors.kind = "無効な選択肢です";
   }
 
   // lang: 各要素が許可値に含まれるかチェック
-  if (data.lang.length > 0) {
-    const invalid = data.lang.some(
-      (l) => !(LANG_OPTIONS as readonly string[]).includes(l)
-    );
-    if (invalid) {
-      errors.lang = "無効な選択肢です";
-    }
+  if (data.lang.some((l) => !isAllowedValue(l, LANG_OPTIONS))) {
+    errors.lang = "無効な選択肢です";
   }
 
   return errors;

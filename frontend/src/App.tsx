@@ -1,4 +1,5 @@
 import { useContactForm } from "./hooks/useContactForm";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import { InputPage } from "./pages/InputPage";
 import { ConfirmPage } from "./pages/ConfirmPage";
 import { CompletePage } from "./pages/CompletePage";
@@ -12,9 +13,9 @@ import "./App.css";
  * コンタクトフォームは「入力→確認→完了」の一本道なので、
  * URL を変えずに画面を切り替える方がシンプルで使いやすい。
  *
- * useContactForm フックが返すステップ値に応じて、表示するページを切り替える。
+ * ErrorBoundary で全体をラップし、予期しないエラーでもアプリがクラッシュしないようにする。
  */
-function App() {
+function ContactForm() {
   const {
     formData,
     errors,
@@ -54,6 +55,14 @@ function App() {
         <ErrorPage serverError={serverError} goBackToInput={goBackToInput} />
       );
   }
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <ContactForm />
+    </ErrorBoundary>
+  );
 }
 
 export default App;

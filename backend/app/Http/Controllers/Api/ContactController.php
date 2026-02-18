@@ -6,13 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ContactRequest;
 use App\Services\ContactService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 
 /**
  * コンタクトフォーム API コントローラ
  *
  * コントローラの役割は「リクエストを受け取り、レスポンスを返す」こと。
  * バリデーションは ContactRequest に、ビジネスロジックは ContactService に委譲する。
- * こうすることでコントローラが肥大化（Fat Controller）するのを防ぐ。
  */
 class ContactController extends Controller
 {
@@ -23,9 +23,6 @@ class ContactController extends Controller
      * 1. ContactRequest がバリデーションを自動実行（失敗 → 422 レスポンス）
      * 2. バリデーション通過後、ContactService でメール送信
      * 3. 成功レスポンスを返す
-     *
-     * @param ContactRequest $request  バリデーション済みのリクエスト
-     * @param ContactService $service  メール送信サービス（依存性注入）
      */
     public function store(ContactRequest $request, ContactService $service): JsonResponse
     {
@@ -41,7 +38,14 @@ class ContactController extends Controller
                 'message' => 'お問い合わせを送信しました',
             ]);
         } catch (\Exception $e) {
-            // メール送信に失敗した場合のエラーハンドリング
+            // エラーの詳細をログに記録（デバッグに必要な情報を含める）
+            Log::error('Contact form mail send failed', [
+                'error'   => $e->getMessage(),
+                'ip'      => $request->ip(),
+                'email'   => $request->input('email'),
+                'trace'   => $e->getTraceAsString(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'message' => 'メールの送信に失敗しました',

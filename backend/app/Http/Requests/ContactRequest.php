@@ -5,12 +5,16 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Validation\Rule;
 
 /**
  * コンタクトフォームのバリデーションリクエスト
  *
  * FormRequest を使うことで、バリデーションルールをコントローラから分離できる。
  * authorize() で認証チェック、rules() でルール定義、messages() で日本語エラーメッセージを返す。
+ *
+ * prepareForValidation(): バリデーション前に入力値をサニタイズ（トリム等）
+ * rules(): config/contact.php の選択肢を参照してハードコードを排除
  */
 class ContactRequest extends FormRequest
 {
@@ -23,14 +27,26 @@ class ContactRequest extends FormRequest
     }
 
     /**
+     * バリデーション前の入力値サニタイズ
+     *
+     * ユーザー入力の前後の空白を除去する。
+     * これにより「 田中太郎 」→「田中太郎」のように正規化される。
+     * FuelPHP 版の add_rule('trim') に相当。
+     */
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'name'    => trim($this->input('name', '')),
+            'email'   => trim($this->input('email', '')),
+            'comment' => trim($this->input('comment', '')),
+        ]);
+    }
+
+    /**
      * バリデーションルール
      *
-     * 既存 FuelPHP 版と同等のルールを Laravel 形式で定義。
-     * - name: 必須、最大20文字、タブ・改行禁止（メールヘッダインジェクション対策）
-     * - email: 必須、RFC 準拠のメール形式
-     * - comment: 必須、最大400文字
-     * - gender, kind: 許可値リスト（nullable なので未選択OK）
-     * - lang: 配列で受け取り、各要素が許可値に含まれるかチェック
+     * 選択肢の許可値は config/contact.php から取得する。
+     * ハードコードを避けることで、選択肢の追加・変更が設定ファイルだけで完結する。
      */
     public function rules(): array
     {
@@ -38,17 +54,15 @@ class ContactRequest extends FormRequest
             'name'    => ['required', 'max:20', 'regex:/\A[^\r\n\t]*\z/u'],
             'email'   => ['required', 'email:rfc'],
             'comment' => ['required', 'max:400'],
-            'gender'  => ['nullable', 'in:男性,女性'],
-            'kind'    => ['nullable', 'in:,製品購入前のお問い合わせ,製品購入後のお問い合わせ,その他'],
+            'gender'  => ['nullable', Rule::in(config('contact.gender_options'))],
+            'kind'    => ['nullable', Rule::in(config('contact.kind_options'))],
             'lang'    => ['nullable', 'array'],
-            'lang.*'  => ['in:PHP,Perl,Python'],
+            'lang.*'  => [Rule::in(config('contact.lang_options'))],
         ];
     }
 
     /**
      * 日本語エラーメッセージ
-     *
-     * Laravel デフォルトは英語なので、日本語ユーザー向けにカスタムメッセージを定義。
      */
     public function messages(): array
     {
