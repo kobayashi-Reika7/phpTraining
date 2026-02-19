@@ -38,6 +38,26 @@ frontend/dist/
 contactform/fuel/vendor/
 
 # ==========================
+# calendar/ (予約カレンダー Laravel + React)
+# ==========================
+calendar/backend/vendor/
+calendar/backend/node_modules/
+calendar/backend/.env
+calendar/backend/storage/*.key
+calendar/backend/storage/framework/cache/data/*
+calendar/backend/storage/framework/sessions/*
+calendar/backend/storage/framework/views/*
+calendar/backend/storage/logs/*
+calendar/backend/database/database.sqlite
+calendar/frontend/node_modules/
+calendar/frontend/dist/
+
+# ==========================
+# calendar_temp/ (マイグレーション元参照用、完了後削除)
+# ==========================
+calendar_temp/
+
+# ==========================
 # OS / IDE
 # ==========================
 Thumbs.db
