@@ -12,6 +12,13 @@ export async function createReservation(payload: CreateReservationPayload): Prom
   });
 }
 
+export async function updateReservation(id: number, payload: CreateReservationPayload): Promise<Reservation> {
+  return apiFetch<Reservation>(`/reservations/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(payload),
+  });
+}
+
 export async function cancelReservation(id: number): Promise<{ ok: boolean; id: number }> {
   return apiFetch(`/reservations/${id}`, { method: 'DELETE' });
 }

@@ -40,7 +40,15 @@ export default function MyReservationsPage() {
 
   const handleChange = (reservation: Reservation) => {
     navigate('/reserve/form', {
-      state: { date: reservation.date },
+      state: {
+        editMode: true,
+        reservationId: reservation.id,
+        department: reservation.department,
+        date: reservation.date,
+        time: reservation.time,
+        purpose: reservation.purpose,
+        doctor: reservation.doctor,
+      },
     });
   };
 

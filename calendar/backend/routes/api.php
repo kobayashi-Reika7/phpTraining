@@ -39,6 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Reservations（予約 CRUD）
     Route::get('/reservations', [ReservationController::class, 'index']);
     Route::post('/reservations', [ReservationController::class, 'store']);
+    Route::put('/reservations/{id}', [ReservationController::class, 'update']);
     Route::delete('/reservations/{id}', [ReservationController::class, 'destroy']);
 });
 

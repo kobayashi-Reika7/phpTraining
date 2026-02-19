@@ -66,6 +66,28 @@ class ReservationController extends Controller
     }
 
     /**
+     * PUT /api/reservations/{id}
+     * 予約を変更する
+     */
+    public function update(StoreReservationRequest $request, int $id): JsonResponse
+    {
+        try {
+            $result = $this->reservationService->updateReservation(
+                reservationId: $id,
+                department: $request->validated('department'),
+                date: $request->validated('date'),
+                time: $request->validated('time'),
+                userId: $request->user()->id,
+                purpose: $request->validated('purpose') ?? '',
+            );
+
+            return response()->json($result);
+        } catch (\RuntimeException $e) {
+            return response()->json(['error' => $e->getMessage()], 409);
+        }
+    }
+
+    /**
      * DELETE /api/reservations/{id}
      * 予約をキャンセルする
      */

@@ -7,21 +7,36 @@ import { getSlots } from '../services/slotService';
 import { formatDate, getWeekdayLabel, isJapaneseHoliday } from '../utils/holiday';
 import type { AvailabilityResponse } from '../types/slot';
 
+interface LocationState {
+  date?: string;
+  editMode?: boolean;
+  reservationId?: number;
+  department?: string;
+  time?: string;
+  purpose?: string;
+  doctor?: string;
+}
+
 export default function ReservationFormPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const stateDate = (location.state as { date?: string })?.date;
+  const state = (location.state as LocationState) || {};
 
-  const [step, setStep] = useState(1);
-  const [department, setDepartment] = useState('');
-  const [purpose, setPurpose] = useState('first');
-  const [selectedDate, setSelectedDate] = useState(stateDate || '');
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const isEdit = !!state.editMode;
+
+  const [step, setStep] = useState(isEdit ? 2 : 1);
+  const [department, setDepartment] = useState(state.department || '');
+  const [purpose, setPurpose] = useState(
+    state.purpose
+      ? (PURPOSES.find(p => p.label === state.purpose)?.id || 'first')
+      : 'first'
+  );
+  const [selectedDate, setSelectedDate] = useState(state.date || '');
+  const [selectedTime, setSelectedTime] = useState<string | null>(state.time || null);
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // 日付選択用: 今日から14日分の日付一覧
   const dateList = useCallback(() => {
     const dates: string[] = [];
     const today = new Date();
@@ -42,7 +57,10 @@ export default function ReservationFormPage() {
     let cancelled = false;
     setLoading(true);
     setError('');
-    setSelectedTime(null);
+    // 編集モードの初回ロード時は既存の選択時間を保持
+    if (!isEdit || availability !== null) {
+      setSelectedTime(null);
+    }
 
     getSlots(department, selectedDate)
       .then(res => { if (!cancelled) setAvailability(res); })
@@ -50,6 +68,7 @@ export default function ReservationFormPage() {
       .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [department, selectedDate]);
 
   const canConfirm = department && selectedDate && selectedTime && purpose;
@@ -62,13 +81,21 @@ export default function ReservationFormPage() {
         date: selectedDate,
         time: selectedTime,
         purpose,
+        ...(isEdit ? { editMode: true, reservationId: state.reservationId } : {}),
       },
     });
   };
 
   return (
     <div className="page reservation-form-page">
-      <h1 className="page-title">予約する</h1>
+      <h1 className="page-title">{isEdit ? '予約を変更する' : '予約する'}</h1>
+
+      {isEdit && (
+        <div className="info-message">
+          現在の予約: {state.department} / {state.date?.replace(/-/g, '/')} {state.time}
+          {state.doctor && ` / 担当: ${state.doctor}`}
+        </div>
+      )}
 
       {/* Step indicator */}
       <div className="step-indicator">

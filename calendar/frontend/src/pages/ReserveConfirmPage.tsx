@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { createReservation } from '../services/reservationService';
+import { createReservation, updateReservation } from '../services/reservationService';
 import { PURPOSES } from '../constants/masterData';
 import { getWeekdayLabel } from '../utils/holiday';
 
@@ -9,6 +9,8 @@ interface ConfirmState {
   date: string;
   time: string;
   purpose: string;
+  editMode?: boolean;
+  reservationId?: number;
 }
 
 export default function ReserveConfirmPage() {
@@ -19,6 +21,8 @@ export default function ReserveConfirmPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+
+  const isEdit = !!state?.editMode;
 
   if (!state) {
     return (
@@ -38,15 +42,21 @@ export default function ReserveConfirmPage() {
     setError('');
     setLoading(true);
     try {
-      await createReservation({
+      const payload = {
         department: state.department,
         date: state.date,
         time: state.time,
         purpose: purposeLabel,
-      });
+      };
+
+      if (isEdit && state.reservationId) {
+        await updateReservation(state.reservationId, payload);
+      } else {
+        await createReservation(payload);
+      }
       setSuccess(true);
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : '予約に失敗しました。';
+      const msg = err instanceof Error ? err.message : (isEdit ? '変更に失敗しました。' : '予約に失敗しました。');
       setError(msg);
     } finally {
       setLoading(false);
@@ -57,8 +67,12 @@ export default function ReserveConfirmPage() {
     return (
       <div className="page confirm-page">
         <div className="confirm-card success-card">
-          <h1 className="confirm-title">予約が完了しました</h1>
-          <p className="success-message">ご予約ありがとうございます。</p>
+          <h1 className="confirm-title">
+            {isEdit ? '予約の変更が完了しました' : '予約が完了しました'}
+          </h1>
+          <p className="success-message">
+            {isEdit ? '予約内容を更新しました。' : 'ご予約ありがとうございます。'}
+          </p>
           <div className="confirm-actions">
             <button className="btn btn-primary" onClick={() => navigate('/reservations')}>
               予約一覧を見る
@@ -74,7 +88,9 @@ export default function ReserveConfirmPage() {
 
   return (
     <div className="page confirm-page">
-      <h1 className="page-title">予約内容の確認</h1>
+      <h1 className="page-title">
+        {isEdit ? '変更内容の確認' : '予約内容の確認'}
+      </h1>
 
       {error && <div className="error-message">{error}</div>}
 
@@ -104,7 +120,10 @@ export default function ReserveConfirmPage() {
             onClick={handleConfirm}
             disabled={loading}
           >
-            {loading ? '予約中...' : '予約を確定する'}
+            {loading
+              ? (isEdit ? '変更中...' : '予約中...')
+              : (isEdit ? '予約を変更する' : '予約を確定する')
+            }
           </button>
           <button
             className="btn btn-outline"
