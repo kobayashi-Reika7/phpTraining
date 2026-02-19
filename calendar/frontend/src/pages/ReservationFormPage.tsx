@@ -187,6 +187,7 @@ export default function ReservationFormPage() {
                   slots={availability.slots}
                   selectedTime={selectedTime}
                   onSelect={setSelectedTime}
+                  date={selectedDate}
                 />
               ) : null}
             </>

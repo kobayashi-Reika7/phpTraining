@@ -96,10 +96,21 @@ class AvailabilityService
             $userBooked = $this->getUserBookedSlots($userId, $department, $datesToCompute);
         }
 
+        $now = Carbon::now();
+        $currentTime = $now->format('H:i');
+        $todayStr = $now->format('Y-m-d');
+
         // 各日・各時間の空き判定
         foreach ($datesToCompute as $date) {
+            $isToday = ($date === $todayStr);
             $slotList = [];
             foreach (self::TIME_SLOTS as $time) {
+                // 当日の過去時刻は予約不可
+                if ($isToday && $time <= $currentTime) {
+                    $slotList[] = ['time' => $time, 'reservable' => false];
+                    continue;
+                }
+
                 // このユーザーが既に同じ診療科+日+時間で予約済みなら×
                 if (isset($userBooked["{$date}_{$time}"])) {
                     $slotList[] = ['time' => $time, 'reservable' => false];
