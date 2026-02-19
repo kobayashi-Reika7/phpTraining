@@ -1,10 +1,10 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DepartmentSelector from '../components/DepartmentSelector';
+import Calendar from '../components/Calendar';
 import TimeSlotGrid from '../components/TimeSlotGrid';
 import { PURPOSES } from '../constants/masterData';
 import { getSlots } from '../services/slotService';
-import { formatDate, getWeekdayLabel, isJapaneseHoliday } from '../utils/holiday';
 import type { AvailabilityResponse } from '../types/slot';
 
 interface LocationState {
@@ -24,6 +24,10 @@ export default function ReservationFormPage() {
 
   const isEdit = !!state.editMode;
 
+  const now = new Date();
+  const initYear = state.date ? parseInt(state.date.slice(0, 4), 10) : now.getFullYear();
+  const initMonth = state.date ? parseInt(state.date.slice(5, 7), 10) : now.getMonth() + 1;
+
   const [step, setStep] = useState(isEdit ? 2 : 1);
   const [department, setDepartment] = useState(state.department || '');
   const [purpose, setPurpose] = useState(
@@ -31,22 +35,13 @@ export default function ReservationFormPage() {
       ? (PURPOSES.find(p => p.label === state.purpose)?.id || 'first')
       : 'first'
   );
+  const [calYear, setCalYear] = useState(initYear);
+  const [calMonth, setCalMonth] = useState(initMonth);
   const [selectedDate, setSelectedDate] = useState(state.date || '');
   const [selectedTime, setSelectedTime] = useState<string | null>(state.time || null);
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
-  const dateList = useCallback(() => {
-    const dates: string[] = [];
-    const today = new Date();
-    for (let i = 0; i < 14; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      dates.push(formatDate(d));
-    }
-    return dates;
-  }, []);
 
   useEffect(() => {
     if (!department || !selectedDate) {
@@ -57,7 +52,6 @@ export default function ReservationFormPage() {
     let cancelled = false;
     setLoading(true);
     setError('');
-    // 編集モードの初回ロード時は既存の選択時間を保持
     if (!isEdit || availability !== null) {
       setSelectedTime(null);
     }
@@ -84,6 +78,11 @@ export default function ReservationFormPage() {
         ...(isEdit ? { editMode: true, reservationId: state.reservationId } : {}),
       },
     });
+  };
+
+  const handleMonthChange = (y: number, m: number) => {
+    setCalYear(y);
+    setCalMonth(m);
   };
 
   return (
@@ -137,7 +136,7 @@ export default function ReservationFormPage() {
         </section>
       )}
 
-      {/* Step 2: 日付 + 時間枠選択 */}
+      {/* Step 2: カレンダーで日付選択 + 時間枠選択 */}
       {step === 2 && (
         <section className="form-section">
           <button className="btn btn-text" onClick={() => setStep(1)}>
@@ -145,37 +144,13 @@ export default function ReservationFormPage() {
           </button>
 
           <h2 className="form-section-title">日付を選択</h2>
-          <div className="date-picker-list">
-            {dateList().map(dateStr => {
-              const d = new Date(dateStr + 'T00:00:00');
-              const dayLabel = getWeekdayLabel(d);
-              const holiday = isJapaneseHoliday(d);
-              const isSun = d.getDay() === 0;
-              const isSat = d.getDay() === 6;
-              const isWeekend = isSat || isSun;
-              const isClosed = holiday || isWeekend;
-              const isActive = dateStr === selectedDate;
-
-              return (
-                <button
-                  key={dateStr}
-                  className={[
-                    'date-picker-item',
-                    isActive ? 'active' : '',
-                    isClosed ? 'holiday' : '',
-                    isSat ? 'saturday' : '',
-                  ].filter(Boolean).join(' ')}
-                  disabled={isClosed}
-                  onClick={() => setSelectedDate(dateStr)}
-                >
-                  <span className="date-picker-day">{d.getDate()}</span>
-                  <span className="date-picker-weekday">{dayLabel}</span>
-                  {holiday && <span className="date-picker-badge">祝</span>}
-                  {isWeekend && !holiday && <span className="date-picker-badge">休</span>}
-                </button>
-              );
-            })}
-          </div>
+          <Calendar
+            year={calYear}
+            month={calMonth}
+            selectedDate={selectedDate || null}
+            onSelectDate={setSelectedDate}
+            onMonthChange={handleMonthChange}
+          />
 
           {selectedDate && (
             <>
