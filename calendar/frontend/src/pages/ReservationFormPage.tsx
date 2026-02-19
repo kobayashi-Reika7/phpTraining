@@ -152,6 +152,8 @@ export default function ReservationFormPage() {
               const holiday = isJapaneseHoliday(d);
               const isSun = d.getDay() === 0;
               const isSat = d.getDay() === 6;
+              const isWeekend = isSat || isSun;
+              const isClosed = holiday || isWeekend;
               const isActive = dateStr === selectedDate;
 
               return (
@@ -160,14 +162,16 @@ export default function ReservationFormPage() {
                   className={[
                     'date-picker-item',
                     isActive ? 'active' : '',
-                    holiday || isSun ? 'holiday' : '',
+                    isClosed ? 'holiday' : '',
                     isSat ? 'saturday' : '',
                   ].filter(Boolean).join(' ')}
+                  disabled={isClosed}
                   onClick={() => setSelectedDate(dateStr)}
                 >
                   <span className="date-picker-day">{d.getDate()}</span>
                   <span className="date-picker-weekday">{dayLabel}</span>
                   {holiday && <span className="date-picker-badge">祝</span>}
+                  {isWeekend && !holiday && <span className="date-picker-badge">休</span>}
                 </button>
               );
             })}
@@ -180,6 +184,8 @@ export default function ReservationFormPage() {
               </h2>
               {loading ? (
                 <div className="loading">読み込み中...</div>
+              ) : availability?.is_weekend ? (
+                <div className="info-message">土日のため予約できません。</div>
               ) : availability?.is_holiday ? (
                 <div className="info-message">祝日のため予約できません。</div>
               ) : availability ? (

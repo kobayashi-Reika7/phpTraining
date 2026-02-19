@@ -63,8 +63,13 @@ class AvailabilityService
                 continue;
             }
 
+            if ($dt->isWeekend()) {
+                $results[$date] = ['date' => $date, 'is_holiday' => false, 'is_weekend' => true, 'reservable' => false, 'reason' => 'weekend', 'slots' => $allFalse];
+                continue;
+            }
+
             if ($this->holidayService->isJapaneseHoliday($date)) {
-                $results[$date] = ['date' => $date, 'is_holiday' => true, 'reservable' => false, 'reason' => 'holiday', 'slots' => $allFalse];
+                $results[$date] = ['date' => $date, 'is_holiday' => true, 'is_weekend' => false, 'reservable' => false, 'reason' => 'holiday', 'slots' => $allFalse];
                 continue;
             }
 

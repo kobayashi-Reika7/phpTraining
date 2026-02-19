@@ -80,7 +80,9 @@ export default function Calendar({
           const isToday = dateStr === today;
           const hasReservation = reservedDates?.has(dateStr);
 
-          const disabled = isPast;
+          const isWeekend = isSunday || isSaturday;
+          const isClosed = isHoliday || isWeekend;
+          const disabled = isPast || isClosed;
 
           const classes = [
             'calendar-cell',

@@ -44,6 +44,11 @@ class ReservationService
             throw new \RuntimeException('過去の日付は予約できません。別の日をお選びください。');
         }
 
+        // 土日チェック
+        if ($dt->isWeekend()) {
+            throw new \RuntimeException('土日は予約できません。平日をお選びください。');
+        }
+
         // 祝日チェック
         if ($this->holidayService->isJapaneseHoliday($date)) {
             throw new \RuntimeException('祝日のため予約できません。別の日をお選びください。');
@@ -178,6 +183,9 @@ class ReservationService
         $today = Carbon::today();
         if ($dt->lt($today)) {
             throw new \RuntimeException('過去の日付は予約できません。別の日をお選びください。');
+        }
+        if ($dt->isWeekend()) {
+            throw new \RuntimeException('土日は予約できません。平日をお選びください。');
         }
         if ($this->holidayService->isJapaneseHoliday($date)) {
             throw new \RuntimeException('祝日のため予約できません。別の日をお選びください。');
