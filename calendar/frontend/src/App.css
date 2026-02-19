@@ -340,42 +340,77 @@ body {
 
 .mt-1 { margin-top: 1rem; }
 
-/* ---- Date Picker (horizontal scroll) ---- */
-.date-picker-list {
+/* ---- Week Navigation ---- */
+.week-nav {
   display: flex;
-  gap: 0.5rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-  -webkit-overflow-scrolling: touch;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+}
+.week-nav-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+.week-nav-btn {
+  background: var(--bg-primary);
+  border: 1.5px solid var(--medical-border);
+  border-radius: var(--medical-radius-sm);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--medical-blue);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.week-nav-btn:hover:not(:disabled) {
+  background: var(--medical-blue-light);
+  border-color: var(--medical-blue);
+}
+.week-nav-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* ---- Date Picker (7-day flat list) ---- */
+.date-picker-list {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4rem;
 }
 
 .date-picker-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  min-width: 56px;
-  padding: 0.5rem;
+  padding: 0.5rem 0.25rem;
   background: var(--bg-primary);
   border: 2px solid var(--medical-border);
   border-radius: var(--medical-radius-sm);
   cursor: pointer;
   transition: all 0.15s;
-  flex-shrink: 0;
+  min-height: 72px;
+  justify-content: center;
 }
-.date-picker-item:hover { border-color: var(--medical-blue); }
-.date-picker-item.active { border-color: var(--medical-blue); background: var(--medical-blue-light); }
+.date-picker-item:hover:not(:disabled) { border-color: var(--medical-blue); background: #f0f7ff; }
+.date-picker-item.active { border-color: var(--medical-blue); background: var(--medical-blue-light); box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
+.date-picker-item:disabled { opacity: 0.4; cursor: not-allowed; }
 .date-picker-item.holiday .date-picker-weekday { color: var(--medical-error-text); }
 .date-picker-item.saturday .date-picker-weekday { color: var(--medical-blue); }
+.date-picker-item.past { background: var(--bg-secondary); }
 
-.date-picker-day { font-size: 1.25rem; font-weight: 700; }
+.date-picker-month { font-size: 0.65rem; color: var(--text-secondary); line-height: 1; }
+.date-picker-day { font-size: 1.3rem; font-weight: 700; line-height: 1.3; }
 .date-picker-weekday { font-size: 0.75rem; color: var(--text-secondary); }
 .date-picker-badge {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   background: var(--medical-error-bg);
   color: var(--medical-error-text);
   padding: 0.1rem 0.3rem;
   border-radius: 4px;
   margin-top: 0.15rem;
+  line-height: 1;
 }
 
 /* ---- Time Slot Grid ---- */

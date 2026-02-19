@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import DepartmentSelector from '../components/DepartmentSelector';
-import Calendar from '../components/Calendar';
 import TimeSlotGrid from '../components/TimeSlotGrid';
 import { PURPOSES } from '../constants/masterData';
 import { getSlots } from '../services/slotService';
+import { formatDate, getWeekdayLabel, isJapaneseHoliday } from '../utils/holiday';
 import type { AvailabilityResponse } from '../types/slot';
 
 interface LocationState {
@@ -17,16 +17,30 @@ interface LocationState {
   doctor?: string;
 }
 
+function getWeekStart(base: Date): Date {
+  const d = new Date(base);
+  const day = d.getDay();
+  d.setDate(d.getDate() - day);
+  d.setHours(0, 0, 0, 0);
+  return d;
+}
+
+function buildWeekDates(weekStart: Date): string[] {
+  const dates: string[] = [];
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(weekStart);
+    d.setDate(weekStart.getDate() + i);
+    dates.push(formatDate(d));
+  }
+  return dates;
+}
+
 export default function ReservationFormPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = (location.state as LocationState) || {};
 
   const isEdit = !!state.editMode;
-
-  const now = new Date();
-  const initYear = state.date ? parseInt(state.date.slice(0, 4), 10) : now.getFullYear();
-  const initMonth = state.date ? parseInt(state.date.slice(5, 7), 10) : now.getMonth() + 1;
 
   const [step, setStep] = useState(isEdit ? 2 : 1);
   const [department, setDepartment] = useState(state.department || '');
@@ -35,13 +49,52 @@ export default function ReservationFormPage() {
       ? (PURPOSES.find(p => p.label === state.purpose)?.id || 'first')
       : 'first'
   );
-  const [calYear, setCalYear] = useState(initYear);
-  const [calMonth, setCalMonth] = useState(initMonth);
   const [selectedDate, setSelectedDate] = useState(state.date || '');
   const [selectedTime, setSelectedTime] = useState<string | null>(state.time || null);
   const [availability, setAvailability] = useState<AvailabilityResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const todayStr = useMemo(() => formatDate(new Date()), []);
+  const thisWeekStart = useMemo(() => getWeekStart(new Date()), []);
+
+  const initialWeekStart = useMemo(() => {
+    if (isEdit && state.date) {
+      return getWeekStart(new Date(state.date + 'T00:00:00'));
+    }
+    return thisWeekStart;
+  }, [isEdit, state.date, thisWeekStart]);
+
+  const [weekStart, setWeekStart] = useState<Date>(initialWeekStart);
+
+  const weekDates = useMemo(() => buildWeekDates(weekStart), [weekStart]);
+
+  const canGoPrev = weekStart.getTime() > thisWeekStart.getTime();
+
+  const goPrevWeek = () => {
+    const prev = new Date(weekStart);
+    prev.setDate(prev.getDate() - 7);
+    if (prev.getTime() >= thisWeekStart.getTime()) {
+      setWeekStart(prev);
+    }
+  };
+
+  const goNextWeek = () => {
+    const next = new Date(weekStart);
+    next.setDate(next.getDate() + 7);
+    setWeekStart(next);
+  };
+
+  const weekLabel = useMemo(() => {
+    const first = new Date(weekDates[0] + 'T00:00:00');
+    const last = new Date(weekDates[6] + 'T00:00:00');
+    const m1 = first.getMonth() + 1;
+    const m2 = last.getMonth() + 1;
+    if (m1 === m2) {
+      return `${first.getFullYear()}年${m1}月${first.getDate()}日〜${last.getDate()}日`;
+    }
+    return `${m1}/${first.getDate()}〜${m2}/${last.getDate()}`;
+  }, [weekDates]);
 
   useEffect(() => {
     if (!department || !selectedDate) {
@@ -80,11 +133,6 @@ export default function ReservationFormPage() {
     });
   };
 
-  const handleMonthChange = (y: number, m: number) => {
-    setCalYear(y);
-    setCalMonth(m);
-  };
-
   return (
     <div className="page reservation-form-page">
       <h1 className="page-title">{isEdit ? '予約を変更する' : '予約する'}</h1>
@@ -96,7 +144,6 @@ export default function ReservationFormPage() {
         </div>
       )}
 
-      {/* Step indicator */}
       <div className="step-indicator">
         <span className={`step ${step >= 1 ? 'active' : ''}`}>1. 診療科</span>
         <span className={`step ${step >= 2 ? 'active' : ''}`}>2. 日時</span>
@@ -105,7 +152,7 @@ export default function ReservationFormPage() {
 
       {error && <div className="error-message">{error}</div>}
 
-      {/* Step 1: 診療科 + 種別選択 */}
+      {/* Step 1 */}
       {step === 1 && (
         <section className="form-section">
           <h2 className="form-section-title">診療科を選択</h2>
@@ -136,7 +183,7 @@ export default function ReservationFormPage() {
         </section>
       )}
 
-      {/* Step 2: カレンダーで日付選択 + 時間枠選択 */}
+      {/* Step 2 */}
       {step === 2 && (
         <section className="form-section">
           <button className="btn btn-text" onClick={() => setStep(1)}>
@@ -144,13 +191,62 @@ export default function ReservationFormPage() {
           </button>
 
           <h2 className="form-section-title">日付を選択</h2>
-          <Calendar
-            year={calYear}
-            month={calMonth}
-            selectedDate={selectedDate || null}
-            onSelectDate={setSelectedDate}
-            onMonthChange={handleMonthChange}
-          />
+
+          {/* Week navigation */}
+          <div className="week-nav">
+            <button
+              className="week-nav-btn"
+              onClick={goPrevWeek}
+              disabled={!canGoPrev}
+              aria-label="前週"
+            >
+              ‹ 前週
+            </button>
+            <span className="week-nav-label">{weekLabel}</span>
+            <button
+              className="week-nav-btn"
+              onClick={goNextWeek}
+              aria-label="翌週"
+            >
+              翌週 ›
+            </button>
+          </div>
+
+          {/* 7-day flat list */}
+          <div className="date-picker-list">
+            {weekDates.map(dateStr => {
+              const d = new Date(dateStr + 'T00:00:00');
+              const dayLabel = getWeekdayLabel(d);
+              const holiday = isJapaneseHoliday(d);
+              const isSun = d.getDay() === 0;
+              const isSat = d.getDay() === 6;
+              const isWeekend = isSat || isSun;
+              const isPast = dateStr < todayStr;
+              const isClosed = holiday || isWeekend || isPast;
+              const isActive = dateStr === selectedDate;
+
+              return (
+                <button
+                  key={dateStr}
+                  className={[
+                    'date-picker-item',
+                    isActive ? 'active' : '',
+                    isPast ? 'past' : '',
+                    isClosed ? 'holiday' : '',
+                    isSat ? 'saturday' : '',
+                  ].filter(Boolean).join(' ')}
+                  disabled={isClosed}
+                  onClick={() => setSelectedDate(dateStr)}
+                >
+                  <span className="date-picker-month">{d.getMonth() + 1}月</span>
+                  <span className="date-picker-day">{d.getDate()}</span>
+                  <span className="date-picker-weekday">{dayLabel}</span>
+                  {holiday && <span className="date-picker-badge">祝</span>}
+                  {isWeekend && !holiday && <span className="date-picker-badge">休</span>}
+                </button>
+              );
+            })}
+          </div>
 
           {selectedDate && (
             <>
@@ -178,7 +274,7 @@ export default function ReservationFormPage() {
             <div className="form-footer">
               <div className="form-summary">
                 <span>{department}</span>
-                <span>{selectedDate}</span>
+                <span>{selectedDate.replace(/-/g, '/')}</span>
                 <span>{selectedTime}</span>
               </div>
               <button className="btn btn-primary" onClick={handleConfirm}>
